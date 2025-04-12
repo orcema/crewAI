@@ -68,6 +68,12 @@ We'll create a CrewAI application where two agents collaborate to research and w
 ```python
 from crewai import Agent, Crew, Process, Task
 from crewai_tools import SerperDevTool
+from openinference.instrumentation.crewai import CrewAIInstrumentor
+
+tracer_provider = register(
+    endpoint="http://localhost:6006/v1/traces",
+    set_global_tracer_provider=True,)
+CrewAIInstrumentor().instrument(skip_dep_check=True, tracer_provider=tracer_provider)
 
 search_tool = SerperDevTool()
 
