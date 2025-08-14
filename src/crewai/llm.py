@@ -388,15 +388,14 @@ class LLM(BaseLLM):
         formatted_messages = self._format_messages_for_provider(messages)
 
         # --- 2) Prepare the parameters for the completion call
+        # Handle GPT-5 models which have different parameter requirements
+        is_gpt5_model = self.model and any(gpt5_variant in self.model.lower() for gpt5_variant in ["gpt-5", "gpt-5o"])
+        
         params = {
             "model": self.model,
             "messages": formatted_messages,
             "timeout": self.timeout,
-            "temperature": self.temperature,
-            "top_p": self.top_p,
             "n": self.n,
-            "stop": self.stop,
-            "max_tokens": self.max_tokens or self.max_completion_tokens,
             "presence_penalty": self.presence_penalty,
             "frequency_penalty": self.frequency_penalty,
             "logit_bias": self.logit_bias,
@@ -413,6 +412,26 @@ class LLM(BaseLLM):
             "reasoning_effort": self.reasoning_effort,
             **self.additional_params,
         }
+        
+        # Add parameters based on model type
+        if is_gpt5_model:
+            # GPT-5 models: no temperature, no top_p, no stop, use max_completion_tokens
+            if self.max_completion_tokens:
+                params["max_completion_tokens"] = self.max_completion_tokens
+            elif self.max_tokens:
+                params["max_completion_tokens"] = self.max_tokens
+        else:
+            # Other models: include temperature, top_p, stop, use max_tokens
+            if self.temperature is not None:
+                params["temperature"] = self.temperature
+            if self.top_p is not None:
+                params["top_p"] = self.top_p
+            if self.stop is not None:
+                params["stop"] = self.stop
+            if self.max_tokens:
+                params["max_tokens"] = self.max_tokens
+            elif self.max_completion_tokens:
+                params["max_tokens"] = self.max_completion_tokens
 
         # Remove None values from params
         return {k: v for k, v in params.items() if v is not None}
