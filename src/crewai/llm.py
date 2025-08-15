@@ -426,7 +426,7 @@ class LLM(BaseLLM):
                 params["temperature"] = self.temperature
             if self.top_p is not None:
                 params["top_p"] = self.top_p
-            if self.stop is not None:
+            if self.stop is not None and len(self.stop) > 0:
                 params["stop"] = self.stop
             if self.max_tokens:
                 params["max_tokens"] = self.max_tokens
@@ -874,6 +874,10 @@ class LLM(BaseLLM):
         if tool_result is not None:
             return tool_result
         # --- 8) If tool call handling didn't return a result, emit completion event and return text response
+        # If text_response is empty, provide a fallback response
+        if not text_response:
+            text_response = "I apologize, but I couldn't generate a response. Please try again."
+            
         self._handle_emit_call_events(
             response=text_response,
             call_type=LLMCallType.LLM_CALL,
