@@ -31,6 +31,9 @@ if TYPE_CHECKING:
     from chromadb.utils.embedding_functions.jina_embedding_function import (
         JinaEmbeddingFunction,
     )
+    from crewai.rag.embeddings.mistral_embedding_function import (
+        MistralEmbeddingFunction,
+    )
     from chromadb.utils.embedding_functions.ollama_embedding_function import (
         OllamaEmbeddingFunction,
     )
@@ -70,6 +73,7 @@ if TYPE_CHECKING:
     )
     from crewai.rag.embeddings.providers.instructor.types import InstructorProviderSpec
     from crewai.rag.embeddings.providers.jina.types import JinaProviderSpec
+    from crewai.rag.embeddings.providers.mistral.types import MistralProviderSpec
     from crewai.rag.embeddings.providers.microsoft.types import AzureProviderSpec
     from crewai.rag.embeddings.providers.ollama.types import OllamaProviderSpec
     from crewai.rag.embeddings.providers.onnx.types import ONNXProviderSpec
@@ -98,6 +102,7 @@ PROVIDER_PATHS = {
     "huggingface": "crewai.rag.embeddings.providers.huggingface.huggingface_provider.HuggingFaceProvider",
     "instructor": "crewai.rag.embeddings.providers.instructor.instructor_provider.InstructorProvider",
     "jina": "crewai.rag.embeddings.providers.jina.jina_provider.JinaProvider",
+    "mistral": "crewai.rag.embeddings.providers.mistral.mistral_provider.MistralProvider",
     "ollama": "crewai.rag.embeddings.providers.ollama.ollama_provider.OllamaProvider",
     "onnx": "crewai.rag.embeddings.providers.onnx.onnx_provider.ONNXProvider",
     "openai": "crewai.rag.embeddings.providers.openai.openai_provider.OpenAIProvider",
@@ -200,6 +205,10 @@ def build_embedder_from_dict(
 
 @overload
 def build_embedder_from_dict(spec: JinaProviderSpec) -> JinaEmbeddingFunction: ...
+
+
+@overload
+def build_embedder_from_dict(spec: MistralProviderSpec) -> MistralEmbeddingFunction: ...
 
 
 @overload
@@ -344,6 +353,10 @@ def build_embedder(spec: InstructorProviderSpec) -> InstructorEmbeddingFunction:
 
 @overload
 def build_embedder(spec: JinaProviderSpec) -> JinaEmbeddingFunction: ...
+
+
+@overload
+def build_embedder(spec: MistralProviderSpec) -> MistralEmbeddingFunction: ...
 
 
 @overload
